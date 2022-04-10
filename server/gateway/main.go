@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	authpb "coolcar/auth/api/gen/v1"
+	rentalpb "coolcar/rental/api/gen/v1"
 	"log"
 	"net/http"
 
@@ -29,6 +30,13 @@ func main(){
 	)
 	if err!=nil{
 		log.Fatalf("cannot regisiter auth service:%v",err)
+	}
+	err=rentalpb.RegisterTripServiceHandlerFromEndpoint(
+		c,mux,"localhost:8082",
+		[]grpc.DialOption{grpc.WithInsecure()},
+	)
+	if err!=nil{
+		log.Fatalf("cannot regisiter rentalpb service:%v",err)
 	}
 	log.Fatal(http.ListenAndServe(":8080",mux))
 }

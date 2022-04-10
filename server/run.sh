@@ -1,0 +1,1 @@
+go run auth/main.go&go run gateway/main.go&go run rental/main.go

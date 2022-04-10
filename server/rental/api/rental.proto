@@ -6,7 +6,7 @@ message CreateTripRequest {
 }
 
 message CreateTripResponse {
-    
+  string id=1;
 }
 service TripService{
     rpc CreateTrip(CreateTripRequest) returns (CreateTripResponse) {}

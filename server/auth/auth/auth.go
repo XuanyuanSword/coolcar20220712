@@ -44,7 +44,7 @@ func (s *Service) Login(c context.Context,req *authpb.LoginRequest) (*authpb.Log
 		return nil,status.Errorf(codes.Unavailable,"不能生成token%v",err)
 	}
 	return &authpb.LoginResponse{
-		AccessToken: "token accID"+tkn,
+		AccessToken:tkn,
 		ExpiresIn:  int32(s.TokenExpire.Seconds()),
 	},nil
 }

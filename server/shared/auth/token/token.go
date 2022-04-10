@@ -28,5 +28,6 @@ func (v *JWTTokenVerifier)Verify(tokenString string) (string,error){
 	if err:=clm.Valid();err!=nil{
 		return "",fmt.Errorf("claim not vaild: %v",err)
 	}
+
 	return clm.Subject,nil
 }

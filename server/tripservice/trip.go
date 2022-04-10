@@ -5,7 +5,7 @@ import (
 	trippb "coolcar/proto/gen/go"
 )
 type Service struct{
-
+	
 }
 func (s *Service) GetTrip(ctx context.Context, req *trippb.GetTripRequest) (*trippb.GetTripResponse,error) {
 	return &trippb.GetTripResponse{
