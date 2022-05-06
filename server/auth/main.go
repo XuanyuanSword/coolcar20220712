@@ -7,11 +7,9 @@ import (
 	"coolcar/auth/dao"
 	"coolcar/auth/token"
 	"coolcar/auth/wechat"
-	"log"
-	"net"
-	"time"
-
 	"coolcar/secret"
+	"coolcar/shared/server"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -19,44 +17,35 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
-func main(){
-	logger,err:=zap.NewDevelopment()
-	if err!=nil{
-		log.Fatalf("cannot create logger :%v",err)
+
+func main() {
+	logger, err := zap.NewDevelopment()
+	c := context.Background()
+	mongoClient, err := mongo.Connect(c, options.Client().ApplyURI("mongodb://localhost:27017/coolcar"))
+	if err != nil {
+		logger.Fatal("cannot connect mongo", zap.Error(err))
 	}
-	lis,err:=net.Listen("tcp",":8081")
-	if err!=nil{
-		logger.Fatal("cannot listen",zap.Error(err))
-	}
-	c:=context.Background()
-	mongoClient,err:=mongo.Connect(c,options.Client().ApplyURI("mongodb://localhost:27017/coolcar"))
-	if err!=nil{
-		logger.Fatal("cannot connect mongo",zap.Error(err))
-	}
-	s:=grpc.NewServer()
 	tk, err := jwt.ParseRSAPrivateKeyFromPEM([]byte(secret.PrivateKey))
 	if err != nil {
 		//测试会中止
-		logger.Fatal("Failed to parse RSA private key",zap.Error(err))
+		logger.Fatal("Failed to parse RSA private key", zap.Error(err))
 	}
-	authpb.RegisterAuthServiceServer(s,&auth.Service{
-		OpenIDResolver: &wechat.Service{
-			AppID: "wx3e974e6b62b3b907",
-			AppSecret: secret.AppSecret,
-
+	logger.Sugar().Fatal(server.RunGRPCServer(&server.GRPCConfig{
+		Name: "auth",
+		Addr: ":8081",
+		// AuthPublicKeyFile: "shared/auth/public.key",
+		Logger: logger,
+		RegisterFunc: func(s *grpc.Server) {
+			authpb.RegisterAuthServiceServer(s, &auth.Service{
+				OpenIDResolver: &wechat.Service{
+					AppID:     "wx3e974e6b62b3b907",
+					AppSecret: secret.AppSecret,
+				},
+				Logger:         logger,
+				TokenGenerator: token.NewJWTToken("coolcar/auth", tk),
+				TokenExpire:    2 * time.Hour,
+				Mongo:          dao.NewMongo(mongoClient.Database("coolcar")),
+			})
 		},
-		Logger:logger,
-		TokenGenerator:token.NewJWTToken("coolcar/auth",tk),
-		TokenExpire: 2*time.Hour,
-		Mongo:dao.NewMongo(mongoClient.Database("coolcar")),
-	})
-
-   err=s.Serve(lis)
-   logger.Fatal("cannot server",zap.Error(err))
-}
-
-func newZapLogger()(*zap.Logger,error){
-	logger:=zap.NewDevelopmentConfig()
-	logger.EncoderConfig.TimeKey=""
-	return logger.Build()
+	}))
 }

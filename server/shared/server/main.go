@@ -18,12 +18,8 @@ type GRPCConfig struct{
 
 }
 func RunGRPCServer(c *GRPCConfig) error{
-	// logger,err:=zap.NewDevelopment()
-	// if err!=nil{
-	// 	log.Fatalf("cannot create logger :%v",err)
-	// }
 	nameField:=zap.String("name",c.Name)
-	lis,err:=net.Listen("tcp",":8082")
+	lis,err:=net.Listen("tcp",c.Addr)
 	if err!=nil{
 		c.Logger.Fatal("cannot listen",nameField,zap.Error(err))
 	}
@@ -40,11 +36,6 @@ func RunGRPCServer(c *GRPCConfig) error{
 	}
 	s:=grpc.NewServer(opts...)
 	c.RegisterFunc(s)
+	c.Logger.Info("start grpc server",nameField,zap.String("addr",c.Addr))
 	return s.Serve(lis)
-	// c.Re
-	// rentalpb.RegisterTripServiceServer(s,&trip.Service{
-	// 	Logger:c.Logger,
-	// })
-	// err=s.Serve(lis)
-	// logger.Fatal("cannot server",zap.Error(err))
 }

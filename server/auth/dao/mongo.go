@@ -2,11 +2,13 @@ package dao
 
 import (
 	"context"
+	"coolcar/shared/id"
 	Mgo "coolcar/shared/mongo"
+	"coolcar/shared/mongo/objid"
 	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -14,21 +16,21 @@ const openIDField="openid";
 
 type Mongo struct {
 	col *mongo.Collection
-	newObjID func() primitive.ObjectID
+
 }
 func NewMongo(db *mongo.Database) *Mongo {
 	return &Mongo{
 		col:db.Collection("account"),
-		newObjID:primitive.NewObjectID,
+
 	}
 }
 
-func (m *Mongo) ResolveAccountID(c context.Context,openID string) (string, error) {
+func (m *Mongo) ResolveAccountID(c context.Context,openID string) (id.AccountIDs, error) {
 	// m.col.InsertOne(c,bson.M{
 	// 	mgo.IDField:m.newObjID(),
 	// 	openIDField:openID,
 	// })
-	insertID:=m.newObjID()
+	insertID:=Mgo.NewObjID()
 	res := m.col.FindOneAndUpdate(c,bson.M{
 		openIDField:openID,
 	},
@@ -47,5 +49,5 @@ func (m *Mongo) ResolveAccountID(c context.Context,openID string) (string, error
 	if err!=nil{
 		return "",fmt.Errorf("resolve account id failed,err:%v",err)
 	}
-	return row.ID.Hex(),nil
+	return objid.ToAccountID(row.ID),nil
 }

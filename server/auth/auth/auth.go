@@ -38,7 +38,7 @@ func (s *Service) Login(c context.Context,req *authpb.LoginRequest) (*authpb.Log
 		s.Logger.Error("Login",zap.Error(err))
 		return nil,status.Errorf(codes.Unavailable,"不能返回accid%v",err)
 	}
-	tkn,err:=s.TokenGenerator.GenerateToken(accID,s.TokenExpire)
+	tkn,err:=s.TokenGenerator.GenerateToken(accID.String(),s.TokenExpire)
 	if err != nil {
 		s.Logger.Error("Login",zap.Error(err))
 		return nil,status.Errorf(codes.Unavailable,"不能生成token%v",err)

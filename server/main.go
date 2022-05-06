@@ -4,12 +4,9 @@ import (
 	"context"
 	trippb "coolcar/proto/gen/go"
 	trip "coolcar/tripservice"
+	"log"
 	"net"
 	"net/http"
-
-	// "encoding/json"
-	// "fmt"
-	"log"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"google.golang.org/grpc"

@@ -2,7 +2,9 @@ package dao
 
 import (
 	"context"
+	"coolcar/shared/id"
 	Mgo "coolcar/shared/mongo"
+	"coolcar/shared/mongo/objid"
 	mongotesting "coolcar/shared/mongo/testing"
 	"os"
 	"testing"
@@ -23,25 +25,25 @@ func TestResolvrAccountId(t *testing.T) {
 	m:=NewMongo(mc.Database("coolcar"))
 	_,err=m.col.InsertMany(c,[]interface{}{
 		bson.M{
-			Mgo.IDField:mushObjId("623197217465ba8f1d85bcb0"),
+			Mgo.IDField:objid.MustFromID(id.AccountIDs("623197217465ba8f1d85bcb0")),
 			openIDField:"openid1",
 		},
 		bson.M{
-			Mgo.IDField:mushObjId("623197217465ba8f1d85bcb1"),
+			Mgo.IDField:objid.MustFromID(id.AccountIDs("623197217465ba8f1d85bcb1")),
 			openIDField:"openid2",
 		},
 	})
 	if err!=nil{
 		t.Fatalf("insert many failed,err:%v",err)
 	}
-	m.newObjID=func() primitive.ObjectID{
+	Mgo.NewObjID=func() primitive.ObjectID{
 		
-		return mushObjId("623197217465ba8f1d85bcb2")
+		return objid.MustFromID(id.AccountIDs("623197217465ba8f1d85bcb2"))
 	}
 	cases := []struct{
 		name string
 		openId string
-		want string
+		want id.AccountIDs
 	}{
 		{
 			name:"存在用户",
@@ -79,7 +81,7 @@ func TestResolvrAccountId(t *testing.T) {
 func TestMain(m *testing.M){
 	os.Exit(mongotesting.RunwithMongo(m,&mongoURI))
 }
-func mushObjId(hex string)primitive.ObjectID{
-	objID,_:=primitive.ObjectIDFromHex(hex)
-	return objID
-}
+//func mushObjId(hex string)primitive.ObjectID{
+//	objID,_:=primitive.ObjectIDFromHex(hex)
+//	return objID
+//}

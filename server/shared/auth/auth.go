@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"coolcar/shared/auth/token"
+	"coolcar/shared/id"
 	"strings"
 
 	"fmt"
@@ -16,6 +17,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 func Interceptor(publicKeyFile string)(grpc.UnaryServerInterceptor,error){
+	
+	
 	f,err:=os.Open(publicKeyFile)
 	if err!=nil{
 		return nil,fmt.Errorf("cannot open public key file:%v",err)
@@ -54,7 +57,7 @@ func (i *interceptor) HandlerReq(ctx context.Context, req interface{}, info *grp
 	 if err!=nil{
 		 return nil,status.Error(codes.Unauthenticated,"token not vaild")
 	 }
-	return handler(ContextWithAccountId(ctx,aid), req)
+	return handler(ContextWithAccountId(ctx,id.AccountIDs(aid)), req)
 }
 const (
 	
@@ -85,17 +88,18 @@ func tokenFromText(ctx context.Context) (string,error){
 		return tkn,nil
 }
 type accountIDKEY struct{}
-func ContextWithAccountId(c context.Context,aid string) context.Context{
+
+func ContextWithAccountId(c context.Context,aid id.AccountIDs) context.Context{
 	
 	return  context.WithValue(c,accountIDKEY{},aid)
 }
 
-func AccountID(c context.Context)(string,error){
+func AccountID(c context.Context)(id.AccountIDs,error){
 	aid:=c.Value(accountIDKEY{})
 	v,ok:=aid.(string)
 
 	if !ok{
 		return "",fmt.Errorf(v)
 	}
-	return v,nil
+	return id.AccountIDs(v),nil
 }

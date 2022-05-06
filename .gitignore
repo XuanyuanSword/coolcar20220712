@@ -1,8 +1,7 @@
-coolcar2022/miniprogram/node_modules/
-*.test
-.vscode
-*.out
-__debug_bin
-coolcar2022/miniprogram/**/*.js
-miniprogram_npm
-!**/wx/miniprogram/service/proto_gen/*.js
+/server/secret/secret.go
+/gopractice
+/crypto
+/coolcar2022/zc/*.js
+/coolcar2022/miniprogram/node_modules
+/.idea
+/.vscode
