@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -36,10 +35,8 @@ func TestResolvrAccountId(t *testing.T) {
 	if err!=nil{
 		t.Fatalf("insert many failed,err:%v",err)
 	}
-	Mgo.NewObjID=func() primitive.ObjectID{
-		
-		return objid.MustFromID(id.AccountIDs("623197217465ba8f1d85bcb2"))
-	}
+
+	Mgo.NewObjIDwithValue(id.AccountIDs("623197217465ba8f1d85bcb2"))
 	cases := []struct{
 		name string
 		openId string
@@ -79,7 +76,7 @@ func TestResolvrAccountId(t *testing.T) {
 
 }
 func TestMain(m *testing.M){
-	os.Exit(mongotesting.RunwithMongo(m,&mongoURI))
+	os.Exit(mongotesting.RunwithMongo(m))
 }
 //func mushObjId(hex string)primitive.ObjectID{
 //	objID,_:=primitive.ObjectIDFromHex(hex)

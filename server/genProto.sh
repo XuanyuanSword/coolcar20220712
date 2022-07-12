@@ -7,7 +7,7 @@ function genProto {
     PBTS_OUT_DIR=../coolcar2022/miniprogram/service/proto_gen/${DOMAIN}
     PBTS_BIN_DIR=../coolcar2022/miniprogram/node_modules/.bin
     $PBTS_BIN_DIR/pbjs -t static -w es6  $PROTO_PATH/${DOMAIN}.proto --no-create --no-encode --no-decode --no-verify --no-delimited -o $PBTS_OUT_DIR/${DOMAIN}_pb_tmp.js
-    echo 'import * as $protobuf from "protobufjs";\n' > $PBTS_OUT_DIR/${DOMAIN}_pb.js
+    echo 'import * as $protobuf from "protobufjs";' > $PBTS_OUT_DIR/${DOMAIN}_pb.js
     cat $PBTS_OUT_DIR/${DOMAIN}_pb_tmp.js >> $PBTS_OUT_DIR/${DOMAIN}_pb.js
     rm $PBTS_OUT_DIR/${DOMAIN}_pb_tmp.js
     $PBTS_BIN_DIR/pbts -o $PBTS_OUT_DIR/${DOMAIN}_pb.d.ts $PBTS_OUT_DIR/${DOMAIN}_pb.js
