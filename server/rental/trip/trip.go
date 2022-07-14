@@ -6,11 +6,10 @@ import (
 	"coolcar/rental/trip/dao"
 	"coolcar/shared/auth"
 	"coolcar/shared/id"
-	"time"
-
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"time"
 )
 
 type Service struct {
@@ -36,17 +35,21 @@ type CarManager interface{
 }
 
 func (s *Service) CreateTrip(c context.Context, req *rentalpb.CreateTripRequest) (*rentalpb.TripEntity, error) {
+	s.Logger.Info("CreateTrip",zap.String("code",req.CarId))
 	//TODO: 验证驾驶者身份
 	//TODO: 车辆开锁
 	//TODO: 创建行程 开始计费
 	aid,err:=auth.AccountID(c)
+	s.Logger.Info("CreateTrip",zap.String("aid",string(aid)))
     if err!=nil{
     	return nil,err
 	}
+
 	iID,err:=s.ProfileManage.Verify(c,aid)
 	if err!=nil{
 		return nil,status.Error(codes.FailedPrecondition,err.Error())
 	}
+
 	carID:=id.CarID(req.CarId)
 	err=s.CarManage.Verify(c,carID,req.Start)
 	if err!=nil{
@@ -75,6 +78,8 @@ func (s *Service) CreateTrip(c context.Context, req *rentalpb.CreateTripRequest)
 		s.Logger.Warn("无法创建trip",zap.Error(err))
 		return nil,status.Error(codes.AlreadyExists,"")
 	}
+
+	s.Logger.Info("err",zap.Error(err))
 	go func(){
 		err=s.CarManage.Unlock(c,carID)
 		if err!=nil{

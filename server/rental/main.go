@@ -23,14 +23,14 @@ func main() {
 		log.Fatalf("cannot create logger :%v", err)
 	}
 	c := context.Background()
-	mongoClient, err := mongo.Connect(c, options.Client().ApplyURI("mongodb://localhost:27017"))
+	mongoClient, err := mongo.Connect(c, options.Client().ApplyURI("mongodb://localhost:27017/coolcar"))
 	if err != nil {
 		logger.Fatal("cannot connect mongo", zap.Error(err))
 	}
 	logger.Sugar().Fatal(server.RunGRPCServer(&server.GRPCConfig{
 		Name:              "rental",
 		Addr:              ":8082",
-		AuthPublicKeyFile: "shared/auth/public.key",
+		AuthPublicKeyFile: "../shared/auth/public.key",
 		Logger:            logger,
 		RegisterFunc: func(s *grpc.Server) {
 			rentalpb.RegisterTripServiceServer(s, &trip.Service{
