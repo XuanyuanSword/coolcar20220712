@@ -92,12 +92,40 @@ func (s *Service) CreateTrip(c context.Context, req *rentalpb.CreateTripRequest)
 	},nil
 }
 func (s *Service) GetTrip(c context.Context, req *rentalpb.GetTripRequest) (*rentalpb.Trip, error) {
+	aid,err:=auth.AccountID(c)
+	s.Logger.Info("GetTrip",zap.String("aid",string(aid)))
+	if err!=nil{
+		return nil,err
+	}
+	tr,err:=s.Mongo.GetTrip(c,id.TripID(req.Id),aid)
+	if err!=nil{
+		return nil,status.Error(codes.NotFound,"")
+	}
 
-	return nil, status.Error(codes.Unimplemented, "")
+	return tr.Trip,nil
 }
 func (s *Service) GetTrips(c context.Context, req *rentalpb.GetTripsRequest) (*rentalpb.GetTripsResponse, error) {
+	aid,err:=auth.AccountID(c)
+	s.Logger.Info("GetTrip",zap.String("aid",string(aid)))
+	if err!=nil{
+		return nil,err
+	}
+	trs,err:=s.Mongo.GetTrips(c,aid,req.Status)
+	if err!=nil{
+		s.Logger.Error("cannot get trips",zap.Error(err))
+        return nil,status.Error(codes.Internal,"")
+	}
 
-	return nil, status.Error(codes.Unimplemented, "")
+    res :=&rentalpb.GetTripsResponse{
+
+	}
+	for _,tr:=range trs{
+		res.Trips=append(res.Trips,&rentalpb.TripEntity{
+			Id:tr.ID.Hex(),
+			Trip:tr.Trip,
+		})
+	}
+	return res,nil
 }
 func (s *Service) UpdateTrip(c context.Context, req *rentalpb.UpdateTripReq) (*rentalpb.Trip, error) {
 	// TDDO:为什么这里能够取到aid
