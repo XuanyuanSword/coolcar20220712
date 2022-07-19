@@ -31,7 +31,7 @@ func RunGRPCServer(c *GRPCConfig) error{
 		if err!=nil{
 			c.Logger.Fatal("cannot create interceptor",zap.Error(err))
 		}
-		fmt.Println("in:",in);
+		fmt.Println("in:",in,grpc.UnaryInterceptor(in));
 		opts=append(opts,grpc.UnaryInterceptor(in))
 	}
 	s:=grpc.NewServer(opts...)

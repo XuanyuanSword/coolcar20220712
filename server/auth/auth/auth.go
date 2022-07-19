@@ -33,7 +33,6 @@ func (s *Service) Login(c context.Context,req *authpb.LoginRequest) (*authpb.Log
 		return nil,status.Errorf(codes.Unavailable,"不能返回openid%v",err)
 	}
 	accID,err:=s.Mongo.ResolveAccountID(c,openid)
-
 	if err != nil {
 		s.Logger.Error("Login",zap.Error(err))
 		return nil,status.Errorf(codes.Unavailable,"不能返回accid%v",err)

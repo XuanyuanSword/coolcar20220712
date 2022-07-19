@@ -97,14 +97,10 @@ func ContextWithAccountId(c context.Context,aid id.AccountIDs) context.Context{
 func AccountID(c context.Context)(id.AccountIDs,error){
 	v := c.Value(accountIDKEY{})
 	aid, ok := v.(id.AccountIDs)
-	fmt.Print("123")
-	//aid:=c.Value(accountIDKEY{})
-	//fmt.Print(aid)
-	//v,ok:=aid.(string)
-	fmt.Print("426")
+
 
 	if !ok{
-	fmt.Print("264")
+
 		return "", status.Error(codes.Unauthenticated, "")
 	}
 	return aid,nil

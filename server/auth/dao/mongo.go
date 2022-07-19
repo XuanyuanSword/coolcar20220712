@@ -24,12 +24,15 @@ func NewMongo(db *mongo.Database) *Mongo {
 
 	}
 }
-
+type accountIDKEY struct{}
 func (m *Mongo) ResolveAccountID(c context.Context,openID string) (id.AccountIDs, error) {
 	// m.col.InsertOne(c,bson.M{
 	// 	mgo.IDField:m.newObjID(),
 	// 	openIDField:openID,
 	// })
+	v := c.Value(accountIDKEY{})
+	aid, _ := v.(string)
+	fmt.Println(aid,"aidBefore")
 	insertID:=Mgo.NewObjID()
 	res := m.col.FindOneAndUpdate(c,bson.M{
 		openIDField:openID,
@@ -41,6 +44,9 @@ func (m *Mongo) ResolveAccountID(c context.Context,openID string) (id.AccountIDs
 	options.FindOneAndUpdate().
 		SetUpsert(true).
 		SetReturnDocument(options.After))
+	v = c.Value(accountIDKEY{})
+	aid, _ = v.(string)
+	fmt.Println(aid,"aid")
 	if err:=res.Err();err!=nil{
 		return "",fmt.Errorf("resolve account id failed,err:%v",err)
 	}

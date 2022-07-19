@@ -43,6 +43,7 @@ func (m *Mongo) CreateTrip(c context.Context, trip *Rentalpb.Trip) (*TripRecord,
 		Trip: trip,
 	}
 	r.ID = Mgo.NewObjID()
+
 	r.UpdateAt = Mgo.UpdateAt()
 	_,err:=m.col.InsertOne(c,r)
 	if err!=nil{
