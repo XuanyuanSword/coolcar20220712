@@ -20,6 +20,7 @@ func MustFromID(id fmt.Stringer) primitive.ObjectID{
 }
 
 func ToAccountID(oid primitive.ObjectID)id.AccountIDs{
+	fmt.Print(oid.Hex())
 	return id.AccountIDs(oid.Hex())
 }
 
