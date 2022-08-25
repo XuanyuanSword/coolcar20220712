@@ -1,7 +1,7 @@
 /server/secret/secret.go
 /gopractice
 /crypto
-/coolcar2022/zc/*.js
-/coolcar2022/*/node_modules
+/*/zc/*.js
+/*/*/node_modules
 /.idea
 /.vscode
