@@ -2,6 +2,6 @@
 /gopractice
 /crypto
 /coolcar2022/zc/*.js
-/coolcar2022/miniprogram/node_modules
+/coolcar2022/*/node_modules
 /.idea
 /.vscode
