@@ -6,6 +6,7 @@ import (
 	"coolcar/rental/trip/dao"
 	"coolcar/shared/auth"
 	"coolcar/shared/id"
+	"coolcar/shared/mongo/objid"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -33,7 +34,8 @@ type POIManager interface{
 //车辆管理
 type CarManager interface{
 	Verify(context.Context,id.CarID,*rentalpb.Location)(error)
-	Unlock(context.Context,id.CarID)(error)
+	Unlock(context.Context,id.CarID,id.AccountIDs,id.TripID)(error)
+	Lock(c context.Context,cid id.CarID)(error)
 }
 
 
@@ -96,7 +98,7 @@ func (s *Service) CreateTrip(c context.Context, req *rentalpb.CreateTripRequest)
 
 	s.Logger.Info("err",zap.Error(err))
 	go func(){
-		err=s.CarManage.Unlock(c,carID)
+		err=s.CarManage.Unlock(c,carID,aid,objid.ToTripID(tr.ID))
 		if err!=nil{
 			s.Logger.Error("无法开锁")
 		}
@@ -165,6 +167,11 @@ func (s *Service) UpdateTrip(c context.Context, req *rentalpb.UpdateTripReq) (*r
 	if req.EndTrip{
 		tr.Trip.End=tr.Trip.Current
 		tr.Trip.Status=rentalpb.TripStatus_FINISHED
+		err:=s.CarManage.Lock(c,id.CarID(tr.Trip.CarId))
+		if err!=nil{
+			return nil,status.Errorf(codes.FailedPrecondition,"关锁失败")
+		}
+
 	}
 	s.Mongo.UpdateTrip(c,id.TripID(req.Id),aid,time.Now().Unix(),tr.Trip)
 	return nil, status.Error(codes.Unimplemented, "")
