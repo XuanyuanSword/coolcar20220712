@@ -15,3 +15,5 @@ function genProto {
 
 genProto auth
 genProto rental
+
+genProto car

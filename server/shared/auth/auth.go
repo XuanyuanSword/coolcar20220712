@@ -57,10 +57,10 @@ func (i *interceptor) HandlerReq(ctx context.Context, req interface{}, info *grp
 	 if err!=nil{
 		 return nil,status.Error(codes.Unauthenticated,"token not vaild")
 	 }
-	return handler(ContextWithAccountId(ctx,id.AccountIDs(aid)), req)
+	return handler(ContextWithAccountId(ctx,id.AccountID(aid)), req)
 }
 const (
-	
+	ImpersonateAccountHeader = "impersonate-account-id"
 	authorization="authorization"
 	tknPrefix="token "
 )
@@ -89,14 +89,14 @@ func tokenFromText(ctx context.Context) (string,error){
 }
 type accountIDKEY struct{}
 
-func ContextWithAccountId(c context.Context,aid id.AccountIDs) context.Context{
+func ContextWithAccountId(c context.Context,aid id.AccountID) context.Context{
 	
 	return  context.WithValue(c,accountIDKEY{},aid)
 }
 
-func AccountID(c context.Context)(id.AccountIDs,error){
+func AccountID(c context.Context)(id.AccountID,error){
 	v := c.Value(accountIDKEY{})
-	aid, ok := v.(id.AccountIDs)
+	aid, ok := v.(id.AccountID)
 	fmt.Print("123")
 	//aid:=c.Value(accountIDKEY{})
 	//fmt.Print(aid)

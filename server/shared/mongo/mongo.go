@@ -11,12 +11,12 @@ import (
 
 //IDFieldName
 const (
-	IDField            = "_id"
+	IDFieldName            = "_id"
 	UpdatedAtFieldName = "updatedat"
 )
 
 //IDField
-type ObjId struct {
+type IDField struct {
 	ID primitive.ObjectID `bson:"_id"`
 }
 

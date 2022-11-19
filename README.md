@@ -4,3 +4,5 @@
 1. `npm install`
 1. 打开小程序开发工具，点击工具->构建npm
 1. 点击编译
+##  用docker生成镜像
+docker build -t coolcar/gateway -f ../deployment/gateway/Dockerfile .

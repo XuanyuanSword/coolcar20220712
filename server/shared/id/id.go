@@ -1,6 +1,6 @@
 package id
-type AccountIDs string
-func (a AccountIDs) String() string{
+type AccountID string
+func (a AccountID) String() string{
 	return string(a)
 }
 
@@ -19,4 +19,9 @@ func (c CarID) String() string{
 	return string(c)
 }
 
+// BlobID defines blob id object.
+type BlobID string
 
+func (i BlobID) String() string {
+	return string(i)
+}
